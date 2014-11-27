@@ -12,7 +12,7 @@
     - nginx
     - php
     - drush
-    - { role: aegir-master, master_domain: aegir.gub.se }
+    - { role: aegir-master, master_domain: aegir.ub035208.ub.gu.se }
 
 
 - hosts: webserver
@@ -23,3 +23,4 @@
     - php
     - drush
     - aegir-slave
+
