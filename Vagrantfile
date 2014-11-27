@@ -21,11 +21,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.playbook = 'provisioning/playbook.yml'
       ansible.sudo = true
       ansible.limit = 'all'
-      # ansible.verbose = 'vvvvv'
 
       ansible.groups = {
         'hostmaster' => ['aegir.gub.se'],
-        'webserver' => ['aegir.gub.se'],
       }
 
       ansible.extra_vars = {
