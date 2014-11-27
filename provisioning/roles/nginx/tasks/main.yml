@@ -1,0 +1,22 @@
+---
+- name: add nginx gpg key
+  apt_key: id=7BD9BF62 url=http://nginx.org/keys/nginx_signing.key
+
+- name: add nginx apt repository
+  apt_repository: repo='deb http://nginx.org/packages/ubuntu/ {{ ansible_distribution_release }} nginx' state=present update_cache=yes
+
+- name: install nginx
+  apt: pkg=nginx state=latest
+
+- name: add nginx.conf
+  copy: src=nginx.conf dest=/etc/nginx/nginx.conf mode=644 owner=root group=root
+  notify: restart nginx
+
+- name: create /var/lib/nginx
+  file: path=/var/lib/nginx owner=www-data group=www-data state=directory
+
+- name: create /etc/nginx/{{ item }}
+  file: path=/etc/nginx/{{ item }} owner=root group=root state=directory
+  with_items:
+    - sites-available
+    - sites-enabled

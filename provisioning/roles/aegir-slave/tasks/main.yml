@@ -1,0 +1,27 @@
+---
+- name: add aegir group
+  group: name=aegir state=present
+
+- name: add aegir user
+  user: name=aegir group=aegir groups=www-data home=/var/aegir shell=/bin/bash append=yes state=present
+
+- name: create /srv/www directory
+  file: dest=/srv/www mode=755 owner=aegir group=www-data state=directory
+
+- name: create aegir folders
+  file: dest={{ item }} mode=755 owner=aegir group=aegir state=directory
+  with_items:
+    - /var/aegir/.drush
+    - /var/aegir/.ssh
+
+- name: add aegir to sudoers.d
+  copy: src=sudoers.d/aegir dest=/etc/sudoers.d/aegir mode=440 owner=root group=root validate='visudo -cf %s'
+
+- name: symlink aegir nginx conf
+  file: src=/var/aegir/config/nginx.conf dest=/etc/nginx/conf.d/aegir.conf owner=root group=root state=link force=yes
+
+- name: add authorized_keys
+  copy: src=ssh/authorized_keys dest=/var/aegir/.ssh/authorized_keys mode=400 owner=aegir group=aegir
+
+- name: add aegir database user
+  mysql_user: name=aegir password=aegir priv=*.*:ALL,GRANT host=% state=present

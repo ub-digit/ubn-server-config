@@ -1,0 +1,25 @@
+---
+- hosts: all
+  sudo: true
+  roles:
+    - common
+
+
+- hosts: hostmaster
+  sudo: true
+  roles:
+    - mariadb
+    - nginx
+    - php
+    - drush
+    - { role: aegir-master, master_domain: aegir.gub.se }
+
+
+- hosts: webserver
+  sudo: true
+  roles:
+    - mariadb
+    - nginx
+    - php
+    - drush
+    - aegir-slave

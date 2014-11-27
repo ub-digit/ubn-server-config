@@ -1,0 +1,11 @@
+---
+- name: install composer globally
+  shell:
+    curl -sS https://getcomposer.org/installer | /usr/bin/php && /bin/mv -f composer.phar /usr/local/bin/composer
+    creates=/usr/local/bin/composer
+
+- name: add composer bin to /etc/environment
+  lineinfile: dest=/etc/environment regexp='PATH=(["]*)((?!.*?{{ composer_home }}/vendor/bin).*?)(["]*)$' line='PATH=\1\2:{{ composer_home }}/vendor/bin\3' backrefs=yes
+
+- name: add composer home to /etc/environment
+  lineinfile: dest=/etc/environment regexp='^COMPOSER_HOME=' line='COMPOSER_HOME={{ composer_home }}'

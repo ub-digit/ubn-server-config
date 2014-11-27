@@ -1,0 +1,27 @@
+---
+- name: download provision
+  command:
+    /usr/local/lib/composer/vendor/bin/drush dl --destination=/var/aegir/.drush provision-6.x-2.1
+    creates=/var/aegir/.drush/provision
+  register: provision
+  sudo: true
+  sudo_user: aegir
+
+- name: clear drush cache
+  command: /usr/local/lib/composer/vendor/bin/drush cache-clear drush
+  when: provision|changed
+  sudo: true
+  sudo_user: aegir
+
+- name: install hostmaster
+  command:
+    /usr/local/lib/composer/vendor/bin/drush hostmaster-install --aegir_db_user=aegir --aegir_db_pass=aegir --http_service_type=nginx {{ master_domain }} -y
+    creates=/var/aegir/hostmaster-6.x-2.1
+  sudo: true
+  sudo_user: aegir
+
+- name: add aegir key
+  copy: src=ssh/aegir dest=/var/aegir/.ssh/id_rsa mode=400 owner=aegir group=aegir
+
+- name: add config/includes/nginx_vhost_common.conf
+  copy: src=config/includes/nginx_vhost_common.conf dest=/var/aegir/config/includes/nginx_vhost_common.conf mode=644 owner=aegir group=aegir

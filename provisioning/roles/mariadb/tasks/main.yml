@@ -1,0 +1,27 @@
+---
+- name: add mariadb gpg key
+  apt_key: url='http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xcbcb082a1bb943db'
+
+- name: add mariadb apt repository
+  apt_repository: repo='deb http://ftp.ddg.lth.se/mariadb/repo/5.5/ubuntu {{ ansible_distribution_release }} main'
+
+- name: install mariadb
+  apt: pkg={{ item }} state=present
+  with_items:
+    - mariadb-server
+  notify: restart mariadb-server
+
+- name: install related packages
+  apt: pkg={{ item }} state=present
+  with_items:
+    - python-mysqldb
+
+- name: copy my.cnf
+  copy: src=my.cnf dest=/etc/mysql/my.cnf mode=644 owner=root group=root
+  notify: restart mariadb-server
+
+- name: delete anonymous sql server user
+  mysql_user: user= state=absent
+
+- name: remove the mysql test database
+  mysql_db: db=test state=absent

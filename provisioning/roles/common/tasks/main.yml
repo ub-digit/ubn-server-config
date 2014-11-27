@@ -1,0 +1,33 @@
+---
+- name: update apt cache
+  apt: update_cache=true cache_valid_time=3600
+
+- name: install common packages
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - python-pycurl
+    - curl
+    - unzip
+
+# - name: ensure ntpd is at the latest version
+#   apt: pkg=ntp state=latest
+#   notify:
+#     - restart ntpd
+
+- name: add git gpg key
+  apt_key: url='http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xA1715D88E1DF1F24' state=present
+
+- name: add git apt repository
+  apt_repository: repo='deb http://ppa.launchpad.net/git-core/ppa/ubuntu {{ ansible_distribution_release }} main' state=present
+
+- name: ensure git is at the latest version
+  apt: pkg=git state=latest
+
+- name: add emacs gpg key
+  apt_key: url='http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0x84DBCE2DCEC45805' state=present
+
+- name: add emacs apt repository
+  apt_repository: repo='deb http://ppa.launchpad.net/cassou/emacs/ubuntu {{ ansible_distribution_release }} main' state=present
+
+- name: ensure emacs24-nox is at the latest version
+  apt: pkg=emacs24-nox state=latest

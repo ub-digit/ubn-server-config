@@ -1,0 +1,22 @@
+---
+- name: add php5 gpg key
+  apt_key: url='http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0x4F4EA0AAE5267A6C' state=present
+
+- name: add php5 deb repository
+  apt_repository: repo='deb http://ppa.launchpad.net/ondrej/php5/ubuntu {{ ansible_distribution_release }} main' update_cache=yes
+
+- name: install php5-fpm
+  apt: pkg=php5-fpm state=present
+
+- name: install php5 packages
+  apt: pkg={{ item }} state=present
+  notify: restart php5-fpm
+  with_items:
+    - php5-mysql
+    - php5-gd
+    - php5-cli
+    - php5-curl
+
+- name: add fpm/php.ini
+  copy: src=fpm/php.ini dest=/etc/php5/fpm/php.ini mode=644 owner=root group=root
+  notify: restart php5-fpm

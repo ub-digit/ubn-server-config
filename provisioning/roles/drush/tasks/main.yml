@@ -1,0 +1,16 @@
+---
+- name: install drush
+  shell:
+    composer global require drush/drush:6.*
+    creates=/usr/local/lib/composer/vendor/bin/drush
+  environment:
+    COMPOSER_HOME: /usr/local/lib/composer
+  register: drush
+
+- name: symlink drush to /usr/local/bin/drush
+  file: src=/usr/local/lib/composer/vendor/bin/drush dest=/usr/local/bin/drush state=link
+
+- name: download dependencies
+  command: /usr/local/lib/composer/vendor/bin/drush
+  ignore_errors: yes
+  when: drush|changed
