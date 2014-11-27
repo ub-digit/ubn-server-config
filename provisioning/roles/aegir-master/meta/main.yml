@@ -1,4 +1,3 @@
 ---
 dependencies:
   - { role: aegir-slave }
-  - { role: postfix }
